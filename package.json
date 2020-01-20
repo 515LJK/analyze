@@ -1,0 +1,33 @@
+{
+  "name": "analyze",
+  "version": "1.0.0",
+  "description": "框架 分析",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack-dev-server --config webpack.config.js --color --progress"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/515LJK/analyze.git"
+  },
+  "author": "Ljk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/515LJK/analyze/issues"
+  },
+  "homepage": "https://github.com/515LJK/analyze#readme",
+  "dependencies": {
+    "element-ui": "^2.13.0",
+    "vue": "^2.6.11",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1",
+    "vue-loader": "^15.7.0",
+    "vue-style-loader": "^4.1.2",
+    "vue-template-compiler": "^2.6.10",
+    "friendly-errors-webpack-plugin": "^1.7.0",
+    "html-webpack-harddisk-plugin": "^1.0.1",
+    "html-webpack-plugin": "^4.0.0-beta.5"
+  }
+}
