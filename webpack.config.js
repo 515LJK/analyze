@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const path = require('path');
 
@@ -15,6 +16,30 @@ module.exports = {
             {
               test: /\.vue$/,
               loader: 'vue-loader'
+            },
+            {
+                test:/\.(scss|css)$/,
+                loader: [{
+                    loader: MiniCssExtractPlugin.loader,
+                    options: {
+                        hmr: true
+                    }
+                },'css-loader'],
+                exclude: /node_modules/
+            },
+            {
+                test: /\.(png|jpg|gif|svg)$/,
+                use: [{
+                    loader: 'url-loader',
+                    options: {
+                        limit: 8192,
+                        name: '[name].[ext]?[hash]'
+                    }
+                }]
+            },
+            {
+                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+                loader: 'url-loader'
             }
         ]
     },
@@ -38,14 +63,23 @@ module.exports = {
     },
     devtool: 'eval-source-map',
     plugins:[
+        new MiniCssExtractPlugin({
+            /* hash 的规则不要随意更改，css 分割的逻辑依据这个文件名规则来进行的！ */
+            filename: `[name]~[contenthash:8].css`,
+            chunkFilename: `[name]~[chunkhash:8].css`,
+            allChunks: true,
+            hot: true
+        }),
         new HtmlWebpackPlugin({
             title: 'test',
             filename: path.join(__dirname,'./src/index.html'),
+            template: path.join(__dirname,'./src/index.html'),
             inject: true,
             excludeChunks: /null/,
             minify: false
         }),
         new VueLoaderPlugin(),
+        new webpack.HotModuleReplacementPlugin(),
         new FriendlyErrorsWebpackPlugin(),
         // 这个插件配置全局/共享的 loader 配置，使所有的 loader 都能收到这些配置
         new webpack.LoaderOptionsPlugin({
