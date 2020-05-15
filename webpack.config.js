@@ -24,7 +24,7 @@ module.exports = {
                     options: {
                         hmr: true
                     }
-                },'css-loader'],
+                },'css-loader', 'sass-loader'],
                 exclude: /node_modules/
             },
             {
@@ -60,6 +60,13 @@ module.exports = {
         disableHostCheck: true,
         hot: true,
         clientLogLevel: "none"
+    },
+    resolve: {
+        extensions: ['.js', '.vue'],
+        alias: {
+            'common': path.join(__dirname,'./src/common'),
+            'v-component': path.join(__dirname,'./src/components'),
+        }
     },
     devtool: 'eval-source-map',
     plugins:[

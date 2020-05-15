@@ -1,73 +1,39 @@
 <template>
-    <div class="index">
-        <div class="test">
-            <svg class="svg" width="200" height="200">
-                <circle class="circle" cx="100" cy="100" r="50" stroke-linecap="round" fill="transparent"></circle>
-            </svg>
-        </div>
+    <div class="index" v-loading.fullscreen="true" ref="index">
+        这是测试啦啦啦啦
     </div>
 </template>
 
 <script>
+import util from 'common/util';
+
 export default {
     data() {
         return {
+            text: '123'
         }
     },
-    methods: {
-    }
+    mounted() {
+        const {index} = this.$refs;
+        util.addClass(index, 'test')
+        util.getStyle(index, 'width')
+        
+    },
+    methods: {}
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 @import url('~element-ui/lib/theme-chalk/index.css');
 
 .index {
+    position: relative;
     width: 400px;
     height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+    color: #000;
 }
-
-.svg {
-   animation: rotate 2s linear infinite; 
-}
-
-.circle {
-    stroke-width: 10px;
-    stroke: #409eff;
-    stroke-dasharray: 90 314;
-    stroke-dashoffset: 0;
-    animation: rotate2 2s linear infinite;
-    transition: 3s;
-}
-
-.circle:hover {
-    stroke-dasharray: 157 314;
-}
-
-@keyframes rotate {
-    100% {
-        transform: rotate(1turn);
-    }
-}
-
-
-@keyframes rotate2 {
-    0% {
-        stroke-dasharray: 0 314;
-        stroke-dashoffset: 0;
-    }
-
-    50% {
-        stroke-dasharray: 157 314;
-        stroke-dashoffset: -157;
-    }
-
-    100% {
-        stroke-dasharray: 314 314;
-        stroke-dashoffset: -314;
-    }
-}
-
-
-
 </style>
