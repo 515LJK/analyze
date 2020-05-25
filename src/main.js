@@ -1,7 +1,7 @@
 import Vue from 'vue/dist/vue.js';
 import index from './index.vue';
-import ElementUI from 'element-ui';
-import loading from './components/loading/directive.js';
+// import ElementUI from 'element-ui';
+import loading from 'element-ui/packages/loading/index';
 
 Vue.use(loading);
 // Vue.use(ElementUI);

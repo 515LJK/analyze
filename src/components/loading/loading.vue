@@ -30,6 +30,16 @@ export default {
 }
 </script>
 
+<style>
+.loading-parent--relative {
+    position: relative !important;
+}
+
+.loading-parent--lock {
+    overflow: hidden !important;
+}
+</style>
+
 <style lang="scss" scoped>
 .mask {
     position: absolute;

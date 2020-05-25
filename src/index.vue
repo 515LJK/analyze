@@ -1,5 +1,5 @@
 <template>
-    <div class="index" v-loading.fullscreen="true" ref="index">
+    <div class="index" v-loading.body="onOff" ref="index">
         这是测试啦啦啦啦
     </div>
 </template>
@@ -10,16 +10,14 @@ import util from 'common/util';
 export default {
     data() {
         return {
-            text: '123'
+            onOff: true
         }
     },
-    mounted() {
-        const {index} = this.$refs;
-        util.addClass(index, 'test')
-        util.getStyle(index, 'width')
-        
-    },
-    methods: {}
+    created() {
+        setTimeout(()=>{
+            this.onOff = false;
+        },3000);
+    }
 }
 </script>
 

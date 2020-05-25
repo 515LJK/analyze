@@ -24,7 +24,7 @@ module.exports = {
                     options: {
                         hmr: true
                     }
-                },'css-loader', 'sass-loader'],
+                },'css-loader', 'sass-loader', 'postcss-loader'],
                 exclude: /node_modules/
             },
             {
@@ -92,5 +92,6 @@ module.exports = {
         new webpack.LoaderOptionsPlugin({
           minimize: false
         }),
+        new webpack.NoEmitOnErrorsPlugin()
     ]
 }
