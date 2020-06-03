@@ -1,6 +1,7 @@
 <template>
-    <div class="index" v-loading.body="onOff" ref="index">
+    <div class="index" ref="index" @click="onOff = !onOff">
         这是测试啦啦啦啦
+        <div v-loading="onOff"></div>
     </div>
 </template>
 
@@ -12,11 +13,6 @@ export default {
         return {
             onOff: true
         }
-    },
-    created() {
-        setTimeout(()=>{
-            this.onOff = false;
-        },3000);
     }
 }
 </script>
