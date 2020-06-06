@@ -1,18 +1,20 @@
 <template>
-    <div class="index" ref="index" @click="onOff = !onOff">
-        这是测试啦啦啦啦
-        <div v-loading="onOff"></div>
+    <div class="index" ref="index">
+        <v-image class="avatar" :src="'https://picsum.photos/536/354'"></v-image>
     </div>
 </template>
 
 <script>
-import util from 'common/util';
+import {isScroll} from 'common/util';
 
 export default {
     data() {
         return {
             onOff: true
         }
+    },
+    mounted() {
+        
     }
 }
 </script>
@@ -29,5 +31,11 @@ export default {
     align-items: center;
     font-size: 36px;
     color: #000;
+    overflow: auto;
+}
+
+.avatar {
+    width: 300px;
+    height: 200px;
 }
 </style>
