@@ -12,6 +12,14 @@
 
 <script>
 import {throttle, isInContainer, getScrollContainer, on, off} from 'common/util';
+const isSupportObjectFit = () => document.documentElement.style.objectFit !== undefined;
+const ObjectFit = {
+    NONE: 'none',
+    CONTAIN: 'contain',
+    COVER: 'cover',
+    FILL: 'fill',
+    SCALE_DOWN: 'scale-down'
+}
 
 export default {
     inheritAttrs: false,
@@ -41,6 +49,15 @@ export default {
             imgHeight: null
         }
     },
+    computed: {
+        imageStyle() {
+            const {fit} = this;
+            if (!this.$isServer && fit) {
+                return isSupportObjectFit() ? {'object-fit': fit} : this.getImageStyle(fit); 
+            };
+            return {};
+        }
+    },
     mounted() {
         if (this.lazy) {
             this.$nextTick(()=>{
@@ -51,6 +68,38 @@ export default {
         }
     },
     methods: {
+        getImageStyle() {
+            const {imgWidth, imgHeight} = this;
+            const {clientWidth: containerWidth, clientHeight: containerHeight} = this.$el;
+            if (!imgWidth || !imgHeight || !containerWidth || !containerHeight) return {};
+            const vertical = imageWidth / imgHeight < 1;
+            if (fit === ObjectFit.SCALE_DOWN) {
+                const smaller = imageWidth < innerWidth && imageHeight < innerHeight;
+                fit = smaller ? ObjectFit.NONE : ObjectFit.CONTAIN;
+            }
+
+            switch (fit) {
+                case ObjectFit.NONE:
+                    return {
+                        width: 'auto',
+                        height: 'auto'
+                    };
+                case ObjectFit.CONTAIN:
+                    return vertical ? {
+                        width: 'auto'
+                    } : {
+                        height: 'auto'
+                    };
+                case ObjectFit.COVER:
+                    return vertical ? {
+                        height: 'auto'
+                    } : {
+                        width: 'auto'
+                    };
+                default:
+                    return {};
+            }
+        },
         addLazyLoad() {
             if (this.$isServer) return;
             const {scrollContainer} = this;
