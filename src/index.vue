@@ -1,6 +1,6 @@
 <template>
     <div class="index" ref="index">
-        <v-image class="avatar" :src="'https://picsum.photos/536/354'"></v-image>
+        <v-image class="avatar" fit="contain" :src="'https://picsum.photos/354/500'"></v-image>
     </div>
 </template>
 
@@ -37,5 +37,6 @@ export default {
 .avatar {
     width: 300px;
     height: 200px;
+    background: red;
 }
 </style>
