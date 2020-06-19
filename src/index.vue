@@ -1,6 +1,6 @@
 <template>
     <div class="index" ref="index">
-        <v-image class="avatar" fit="contain" :src="'https://picsum.photos/354/500'"></v-image>
+        <v-image class="avatar" :preview-list="srcList" fit="contain" :src="'https://picsum.photos/354/500'"></v-image>
     </div>
 </template>
 
@@ -10,7 +10,11 @@ import {isScroll} from 'common/util';
 export default {
     data() {
         return {
-            onOff: true
+            onOff: true,
+            srcList: [
+                'https://picsum.photos/321/200',
+                'https://picsum.photos/640/500'
+            ]
         }
     },
     mounted() {

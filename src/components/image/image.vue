@@ -8,12 +8,15 @@
             <div class="error">加载失败</div>
         </slot>
         <!-- 挂载事件$listeners和属性$attrs -->
-        <img v-on="$listeners" :style="imageStyle" v-bind="$attrs" v-else :src="src" class="img" alt="">
+        <img @click="clickHandler" v-on="$listeners" :style="imageStyle" v-bind="$attrs" v-else :src="src" class="img" alt="">
+        <image-viewer :z-index="zIndex" :url-list="previewList" :initial-index="imageIndex" v-if="showViewer" @close="hideViewer"></image-viewer>
     </div>
 </template>
 
 <script>
 import {throttle, isInContainer, getScrollContainer, on, off} from 'common/util';
+import imageViewer from 'v-component/image/image-viewer.vue';
+
 const isSupportObjectFit = () => document.documentElement.style.objectFit !== undefined;        // 判断是否支持object-fit
 const ObjectFit = {     // 常量存储fit的五种属性
     NONE: 'none',
@@ -22,6 +25,7 @@ const ObjectFit = {     // 常量存储fit的五种属性
     FILL: 'fill',
     SCALE_DOWN: 'scale-down'
 }
+let preOverflow = '';
 
 export default {
     inheritAttrs: false,
@@ -48,7 +52,8 @@ export default {
             error: false,
             show: !this.lazy,
             imgWidth: null,
-            imgHeight: null
+            imgHeight: null,
+            showViewer: false
         }
     },
     computed: {
@@ -58,6 +63,9 @@ export default {
                 return isSupportObjectFit() ? {'object-fit': fit} : this.getImageStyle(fit);
             };
             return {};
+        },
+        imageIndex() {
+            return this.previewList.indexOf(this.src);
         }
     },
     mounted() {
@@ -161,6 +169,15 @@ export default {
             this.loading = false;
             this.error = true;
             this.$emit('error');
+        },
+        clickHandler() {
+            this.showViewer = true;
+            preOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+        },
+        hideViewer() {
+            document.body.style.overflow = preOverflow;
+            this.showViewer = false;
         }
     },
     watch: {
@@ -172,6 +189,9 @@ export default {
         src() {     // 图片路径变化后重新加载
             if (this.show && this.loadImg());
         }
+    },
+    components: {
+        imageViewer
     },
     beforeDestroy() {       // 组件销毁时解绑懒加载
         this.lazy && this.removeLazyLoad();

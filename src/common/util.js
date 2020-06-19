@@ -97,12 +97,12 @@ export function afterLeave(instance, callback, speed = 300, once = false) {
 export const on = (function() {
     if (document.addEventListener) {
         return function(el, event, callback) {
-            if (!isServer || !el || !event || !callback) return;
+            if (isServer || !el || !event || !callback) return;
             el.addEventListener(event, callback, false);
         }
     } else {
         return function(el, event, callback) {
-            if (!isServer || !el || !event || !callback) return;
+            if (isServer || !el || !event || !callback) return;
             el.attachEvent('on' + event, callback);
         }
     }
@@ -111,12 +111,12 @@ export const on = (function() {
 export const off = (function() {
     if (document.removeEventListener) {
         return function(el, event, callback) {
-            if (!isServer || !el || !event || !callback) return;
+            if (isServer || !el || !event || !callback) return;
             el.removeEventListener(event, callback, false);
         }
     } else {
         return function(el, event, callback) {
-            if (!isServer || !el || !event || !callback) return;
+            if (isServer || !el || !event || !callback) return;
             el.detachEvent('on' + event, callback);
         }
     }
@@ -210,4 +210,20 @@ export function throttle(fn, delay, immediate, debounce) {
 
 export function debounce(fn, delay, immediate) {
     return this.throttle(fn, delay, immediate, true);
+}
+
+export function isFixfox() {
+    return !isServer && !!window.navigator.userAgent.match(/firefox/i);
+}
+
+export function rethrottle(fn) {
+    let lock = false;
+    return function(...args) {
+        if (lock) return;
+        lock = true;
+        window.requestAnimationFrame(()=>{
+            fn.apply(this, args);
+            lock = false;
+        })
+    }
 }
