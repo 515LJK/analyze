@@ -29,9 +29,10 @@
 </template>
 
 <script>
+// rethrottle，时间节流函数，在浏览器渲染频率(requestAnimationFrame)为间隔时间。
 import {on, off, isFixfox, rethrottle} from 'common/util';
 
-const Mode = {
+const Mode = {      // 显示模式
     CONTAIN: {
         name: 'contain',
         icon: 'el-icon-full-screen'
@@ -41,7 +42,7 @@ const Mode = {
         icon: 'el-icon-c-scale-to-original'
     }
 }
-const mousewheelEventName = isFixfox() ? 'DOMMouseScroll' : 'mousewheel'
+const mousewheelEventName = isFixfox() ? 'DOMMouseScroll' : 'mousewheel';   // 对fixfox浏览器鼠标滚轮事件做兼容
 
 export default {
     props: {
@@ -74,19 +75,19 @@ export default {
         }
     },
     computed: {
-        isSingle() {
+        isSingle() {        // 单个图片，没有左右切换
             return this.urlList.length <= 1;
         },
-        isFirst() {
+        isFirst() {     // 首张图片
             return this.index === 0;
         },
-        isLast() {
+        isLast() {      // 最后一张图片
             return this.index === this.urlList.length - 1;
         },
-        currentImg() {
+        currentImg() {    // 当前图片
             return this.urlList[this.index];
         },
-        imageStyle() {
+        imageStyle() {      // 设置图片样式
             const {scale, deg, offsetX, offsetY, enableTransition} = this.transform;
             const style = {
                 transform: `scale(${scale}) rotate(${deg}deg)`,
@@ -105,32 +106,32 @@ export default {
         this.$refs['wrapper'].focus();
     },
     methods: {
-        deviceSupportInstall() {
+        deviceSupportInstall() {        // 绑定键盘鼠标滑轮事件
             this._keydownHandle = rethrottle(ev=>{
                 const keyCode = ev.keyCode;
                 switch (keyCode) {
-                    case 27:
+                    case 27:    // ESC键
                         this.close();
                         break;
-                    case 32:
+                    case 32:    // space空格键
                         this.toggleMode();
                         break;
-                    case 37:
+                    case 37:    // 方向←键
                         this.prev();
                         break;
-                    case 38:
+                    case 38:    // 方向↑键
                         this.handelActions('zoomIn');
                         break;
-                    case 39:
+                    case 39:    // 方向→键
                         this.next();
-                        break;
-                    case 40:
+                        break;  
+                    case 40:    // 方向↓键
                         this.handelActions('zoomOut');
                         break;
                 };
             });
             this._mouseWheelHandle = rethrottle(e=>{
-                const delta = e.wheelDelta ? e.wheelDelta : -e.detail;
+                const delta = e.wheelDelta ? e.wheelDelta : -e.detail;  // wheelDelta 正值为上，负值为下，detail正好相反，因此取反一下作为兼容。
                 if (delta > 0) {
                     this.handelActions('zoomIn', {
                         zoomRate: 0.015,
@@ -146,24 +147,24 @@ export default {
             on(document, 'keydown', this._keydownHandle);
             on(document, mousewheelEventName, this._mouseWheelHandle);
         },
-        deviceSupportUnInstall() {
+        deviceSupportUnInstall() {      // 移除鼠标滚轮和键盘事件
             off(document, 'keydown', this._keydownHandle);
             off(document, mousewheelEventName, this._mouseWheelHandle);
             this._keydownHandle = this._mouseWheelHandle = null;
         },
-        prev() {
+        prev() {    // 上一张图片，如果不是循环则停留在第一张图片。
             let {isFirst, index, urlList, infinite} = this;
             if (isFirst && !infinite) return;
             const len = urlList.length;
             this.index = isFirst ? len - 1 : --index;
         },
-        next() {
+        next() {    // 下一张图片，如果不是循环则停留在最后一张图片。
             let {isLast, index, urlList, infinite} = this;
             if (isLast && !infinite) return;
             const len = urlList.length;
             this.index = isLast ? 0 : ++index;
         },
-        handelActions(action, options = {}) {
+        handelActions(action, options = {}) {   // 操作图片各种行为
             if (this.loading) return;
             const {rotateDeg, zoomRate, enableTransition} = {
                 rotateDeg: 90,
@@ -173,24 +174,24 @@ export default {
             };
             const {transform} = this;
             switch (action) {
-                case 'zoomOut':
+                case 'zoomOut':    // 缩小
                     if (transform.scale > 0.2) {
                         transform.scale = parseFloat((transform.scale - zoomRate).toFixed(3));
                     }
                     break;
-                case 'zoomIn':
+                case 'zoomIn':  // 放大
                     transform.scale = parseFloat((transform.scale + zoomRate).toFixed(3));
                     break;
-                case 'clockwise':
+                case 'clockwise':       // 顺时针旋转
                     transform.deg += rotateDeg;
                     break;
-                case 'anticlockwise':
+                case 'anticlockwise':   // 逆时针旋转
                     transform.deg -= rotateDeg;
                     break;
             }
-            transform.enableTransition = enableTransition;
+            transform.enableTransition = enableTransition;      // 是否添加动画过渡效果
         },
-        handleMouseDown(e) {
+        handleMouseDown(e) {        // 鼠标拖拽图片
             if (this.loading || e.button !== 0) return;
             const {offsetX, offsetY} = this.transform;
             const startX = e.pageX;
@@ -205,14 +206,14 @@ export default {
             });
             e.preventDefault();
         },
-        handleImgSucess() {
+        handleImgSucess() {     // 图片加载完成
             this.loading = false;
         },
-        close() {
+        close() {   // 关闭预览
             this.deviceSupportUnInstall();
             this.$emit('close');
         },
-        reset() {
+        reset() {       // 重置图片属性
             this.transform = {
                 scale: 1,
                 deg: 0,
@@ -221,7 +222,7 @@ export default {
                 enableTransition: false
             }
         },
-        toggleMode() {
+        toggleMode() {      // 切换图片显示模式
             const modeKeys = Object.keys(Mode);
             const modeValues = Object.values(Mode);
             const index = modeValues.indexOf(this.mode);
