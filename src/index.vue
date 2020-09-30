@@ -1,46 +1,57 @@
 <template>
-    <div class="index" ref="index">
-        <v-image class="avatar" :preview-list="srcList" fit="contain" :src="'https://picsum.photos/354/500'"></v-image>
+    <div class="index">
+        <div class="wrapper">
+            <DynamicScroller
+                class="scroller"
+                :items="list"
+                :min-item-size="100"
+                key-field="id"
+                v-slot="{ item }"
+            >
+                <div class="item">
+                    {{ item.id }}
+                </div>
+            </DynamicScroller>
+        </div>
     </div>
 </template>
 
 <script>
-import {isScroll} from 'common/util';
-
 export default {
     data() {
         return {
-            onOff: true,
-            srcList: [
-                'https://picsum.photos/321/200',
-                'https://picsum.photos/640/500'
-            ]
+            list: new Array(100).fill(1).map((value, index) => {
+                return {
+                    id: index
+                }
+            })
         }
-    },
-    mounted() {
-        
     }
 }
 </script>
 
 <style lang="scss" scoped>
 @import url('~element-ui/lib/theme-chalk/index.css');
+@import url('~vue-virtual-scroller/dist/vue-virtual-scroller.css');
 
-.index {
-    position: relative;
-    width: 400px;
-    height: 400px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 36px;
-    color: #000;
-    overflow: auto;
+* {
+    box-sizing: border-box;
 }
-
-.avatar {
-    width: 300px;
-    height: 200px;
-    background: red;
+.wrapper {
+    position: relative;
+    width: 200px;
+    height: 400px;
+}
+.scroller {
+    height: 100%;
+}
+.item {
+    width: 100%;
+    height: 100px;
+    padding: 20px;
+    border-bottom: 1px solid red;
+}
+/deep/ .vue-recycle-scroller__item-view.hover {
+    color: yellow;
 }
 </style>
