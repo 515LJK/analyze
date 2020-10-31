@@ -22,6 +22,44 @@ export default {
     data() {
         return {
         }
+    },
+    created() {
+    },
+    methods: {
+        obj() {
+            const _Class = (function() {
+                function constructor(name) {
+                    this.name = name;
+                }
+
+                constructor.prototype.show = function() {
+                    console.log(this.name)
+                }
+                return constructor;
+            })();
+
+            const _extends = (function(parent = null) {
+                if (parent) {
+                    constructor.prototype = Object.create(parent.prototype, {
+                        constructor: {
+                            value: constructor,
+                            configurable: true,
+                            emumerable: false,
+                            writable: true
+                        }
+                    });
+                    constructor.__proto__ = constructor;
+                }
+                function constructor(name) {
+                    this.name = name;
+                }
+
+                constructor.prototype.show = function() {
+                    console.log(this.name)
+                }
+                return constructor;
+            })();
+        }
     }
 }
 </script>

@@ -1,13 +1,17 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 
-class Hook extends React.Component {
-  render() {
-    return (
-      <div className="hook">
-        
-      </div>
-    )
-  }
+function Hook() {
+  const [count] = useState(0);
+
+  useEffect(()=>{
+    console.log(count)
+  });
+
+  return (
+    <div className="hook">
+      {count}
+    </div>
+  )
 }
 
 export default Hook;
