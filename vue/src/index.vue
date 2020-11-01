@@ -24,8 +24,18 @@ export default {
         }
     },
     created() {
+        const arr = [1,3,2,6,4,88,67,9,0];
+        console.log(this.shuffle(arr));
     },
     methods: {
+        shuffle(arr) {
+            let i = arr.length;
+            while(i > 0) {
+                const random = Math.floor(Math.random() * i--);
+                [arr[i], arr[random]] = [arr[random], arr[i]];
+            }
+            return arr;
+        },
         obj() {
             const _Class = (function() {
                 function constructor(name) {
