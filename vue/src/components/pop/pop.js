@@ -12,7 +12,6 @@ const register = {
         };
 
         function Popup(options) {
-            let optionsType = utils.type(options);
             let propData = options || {};
 
             if (typeof options === 'string') {

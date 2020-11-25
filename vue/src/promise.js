@@ -4,7 +4,7 @@ function promise(fn) {
     this.value = null;
     try {
         fn(this.resolve.bind(this), this.reject.bind(this));
-    }catch(e) {
+    }catch(error) {
         this.reject(error);
     }
 }
@@ -82,44 +82,39 @@ promise.prototype = {
     }
 }
 
-// new Promise(res=>{
-//     throw 123;
-// }).then(num=>{
 
-// }).catch(err=>[
-//     console.log(err)
-// ])
+function fn1(fn) {
+    console.log(1)
+    fn()
+    console.log(1)
+}
 
-// function fn1(fn) {
-//     console.log(1)
-//     fn()
-// }
+function fn2(fn) {
+    console.log(2);
+    fn()
+    console.log(2)
+}
 
-// function fn2(fn) {
-//     console.log(2);
-//     fn()
-// }
+function fn3(fn) {
+    console.log(3);
+    fn()
+    console.log(3)
+}
 
-// function fn3(fn) {
-//     console.log(3);
-//     fn()
-// }
+// compose([fn1, fn2, fn3]);
 
-// const cb = [fn1, fn2, fn3];
-
-// let next = function() {};
-
-// function createNext(fn, next) {
-//     return function() {
-//         fn(next)
-//     }
-// }
-
-// for(let i=0;i<cb.length;i++) {
-//     next = createNext(cb[i], next);
-// }
-
-// next()
+function compose(cbs) {
+    let next = function() {};
+    const createNext = function(fn, next) {
+        return function() {
+            fn(next);
+        }
+    }
+    for(let cb of cbs) {
+        next = createNext(cb, next);
+    }
+    next();
+}
 
 // class Parent {
 //     constructor() {

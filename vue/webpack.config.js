@@ -50,7 +50,7 @@ module.exports = {
         inline: true,    //实时刷新
         host: '127.0.0.1',
         quiet: true,
-        port: 8888,     //端口号
+        port: 1314,     //端口号
         overlay: {
             errors: true
         },

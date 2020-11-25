@@ -4,7 +4,8 @@ import index from './index.vue';
 // import DynamicScroller from 'vue-virtual-scroller/src/components/DynamicScroller.vue'
 import loading from 'v-component/loading/directive';
 import image from 'v-component/image/image';
-
+import './test';
+import './promise';
 Vue.prototype.$loading = loading;
 Vue.component('v-image', image);
 Vue.use(loading);
