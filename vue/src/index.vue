@@ -1,6 +1,6 @@
 <template>
     <div class="index">
-        <div class="wrapper">
+        <div class="wrapper" v-loading="true">
             {{money}}
         </div>
     </div>

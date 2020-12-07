@@ -31,16 +31,6 @@ const _extends = (function(parent = null) {
     return constructor;
 })();
 
-
-function shuffle(arr) {
-    let i = arr.length;
-    while(i > 0) {
-        const random = Math.floor(Math.random() * i--);
-        [arr[i], arr[random]] = [arr[random], arr[i]];
-    }
-    return arr;
-}
-
 // const arr = [
 //     [1,2,4,7],
 //     [3,5,8,10],
@@ -84,4 +74,45 @@ function allSettled(promises) {
         }
     });
 }
+
+var minWindow = function(s, t) {
+    let res = [];
+    let needs = {};
+    let windows = {};
+    let right = 0;
+    let left = 0;
+    let size = t.length;
+    let vaild = 0;
+    let min = Number.MAX_SAFE_INTEGER;
+    for(let text of t) {
+        needs[text] ? needs[text]++ : needs[text] = 1;
+    }
+    while(right < s.length) {
+        const rights = s[right];
+        if (needs[rights]) {
+            windows[rights] ? windows[rights]++ : windows[rights] = 1;
+            if (windows[rights] === needs[rights]) vaild++;
+        }
+        if (vaild === size) {
+            while(left <= right) {
+                const lefts = s[left];
+                const len = right - left;
+                if (needs[lefts]) windows[lefts]--;
+                if (windows[lefts] < needs[lefts]) {
+                    if (len < min) {
+                        min = len;
+                        res = s.slice(left, right + 1);
+                    }
+                    vaild--;
+                    break;
+                }
+                left++;
+            }
+        }
+        right++;
+    }
+    return res;
+};
+
+console.log(minWindow('ADOBECODEBANC', 'ABC'));
 
