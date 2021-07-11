@@ -1,97 +1,76 @@
-const webpack = require('webpack');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-const path = require('path');
+const { resolve } = require('path');
+const HtmlWebpackplugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
-    entry: './src/main.js',
-    output: {
-        path: path.join(__dirname,'./src'),
-        filename: 'index.[hash].js'
-    },
-    module: {
-        rules:[
-            {
-              test: /\.vue$/,
-              loader: 'vue-loader'
-            },
-            {
-                test:/\.(scss|css)$/,
-                loader: [{
-                    loader: MiniCssExtractPlugin.loader,
-                    options: {
-                        hmr: true
-                    }
-                },'css-loader', 'sass-loader', 'postcss-loader'],
-                exclude: /node_modules/
-            },
-            {
-                test: /\.(png|jpg|gif|svg)$/,
-                use: [{
-                    loader: 'url-loader',
-                    options: {
-                        limit: 8192,
-                        name: '[name].[ext]?[hash]'
-                    }
-                }]
-            },
-            {
-                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-                loader: 'url-loader'
-            }
-        ]
-    },
-    devServer:{
-        contentBase: path.join(__dirname,'./src'), //本地服务器加载的页面所在目录
-        publicPath: '/',
-        historyApiFallback: true, //不跳转,让所有的404定位到index;
-        inline: true,    //实时刷新
-        host: '127.0.0.1',
-        quiet: true,
-        port: 1314,     //端口号
-        overlay: {
-            errors: true
-        },
-        headers: {
-            'Access-Control-Allow-Origin': '*'
-        },
-        disableHostCheck: true,
-        hot: true,
-        clientLogLevel: "none"
-    },
-    resolve: {
-        extensions: ['.js', '.vue'],
-        alias: {
-            'common': path.join(__dirname,'./src/common'),
-            'v-component': path.join(__dirname,'./src/components'),
+  mode: 'development',
+  entry: './src/index.js',
+  output: {
+    path: resolve(__dirname, 'dist'),
+    filename: '[name].[contenthash].js'
+  },
+  module: {
+    rules: [
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.scss$/,
+        use: ['style-loader', 'css-loader', 'sass-loader']
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        options: {
+          presets: [
+            [
+              '@babel/preset-env',
+              {
+                useBuiltIns: 'usage',
+                corejs: {
+                  version: 3
+                },
+                targets: [
+                  ">= 1%",
+                  "last 2 versions",
+                  "not ie <= 8"
+                ]
+              }
+            ]
+          ]
         }
-    },
-    devtool: 'eval-source-map',
-    plugins:[
-        new MiniCssExtractPlugin({
-            /* hash 的规则不要随意更改，css 分割的逻辑依据这个文件名规则来进行的！ */
-            filename: `[name]~[contenthash:8].css`,
-            chunkFilename: `[name]~[chunkhash:8].css`,
-            allChunks: true,
-            hot: true
-        }),
-        new HtmlWebpackPlugin({
-            title: 'test',
-            filename: path.join(__dirname,'./src/index.html'),
-            template: path.join(__dirname,'./src/index.html'),
-            inject: true,
-            excludeChunks: /null/,
-            minify: false
-        }),
-        new VueLoaderPlugin(),
-        new webpack.HotModuleReplacementPlugin(),
-        new FriendlyErrorsWebpackPlugin(),
-        // 这个插件配置全局/共享的 loader 配置，使所有的 loader 都能收到这些配置
-        new webpack.LoaderOptionsPlugin({
-          minimize: false
-        }),
-        new webpack.NoEmitOnErrorsPlugin()
+      },
+      {
+        test: /\.(png|gif|jpg)$/,
+        loader: 'url-loader',
+        options: {
+          limit: 8 * 1024,
+          esModule: false,
+          name: '[hash:10].[ext]',
+          outputPath: 'image'
+        }
+      },
+      {
+        exclude: [/\.(html|js|css|scss|jpg|png|gif)/],
+        loader: 'file-loader',
+        options: {
+          name: '[hash:10].[ext]',
+          outputPath: 'media'
+        }
+      }
     ]
+  },
+  plugins: [
+    new HtmlWebpackplugin({
+      template: resolve(__dirname, './src/index.html')
+    }),
+    new CleanWebpackPlugin()
+  ],
+  
 }
