@@ -1,8 +1,9 @@
 <template>
     <div class="index">
-        <div class="wrapper" v-loading="true">
+        <div class="wrapper">
             {{money}}
         </div>
+        <i class="iconfont icon-time"></i>
     </div>
 </template>
 
@@ -10,7 +11,7 @@
 export default {
     computed: {
         money() {
-            return 123
+            return 12345
         }
     }
 }
@@ -18,6 +19,7 @@ export default {
 
 <style lang="scss" scoped>
 @import url('~element-ui/lib/theme-chalk/index.css');
+@import url('./style/font/iconfont');
 
 * {
     box-sizing: border-box;
