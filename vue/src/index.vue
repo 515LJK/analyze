@@ -28,6 +28,7 @@ export default {
     position: relative;
     width: 200px;
     height: 400px;
+    color: red;
 }
 .scroller {
     height: 100%;
