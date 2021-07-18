@@ -19,7 +19,7 @@ export default {
 
 <style lang="scss" scoped>
 @import url('~element-ui/lib/theme-chalk/index.css');
-@import url('./style/font/iconfont');
+// @import url('./style/font/iconfont');
 
 * {
     box-sizing: border-box;
