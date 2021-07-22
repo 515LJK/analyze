@@ -4,6 +4,7 @@ const MinCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const TerserWebpackPlugin = require('terser-webpack-plugin');
 module.exports = {
   mode: 'production',
   devtool: 'source-map',
@@ -19,73 +20,79 @@ module.exports = {
         loader: 'vue-loader'
       },
       {
-        test: /\.(css|scss)$/,
-        use: [
-          MinCssExtractPlugin.loader, 
-          'css-loader',
+        oneOf: [
           {
-            loader: 'postcss-loader',
+            test: /\.(css|scss)$/,
+            use: [
+              MinCssExtractPlugin.loader, 
+              'css-loader',
+              {
+                loader: 'postcss-loader',
+                options: {
+                  ident: 'postcss',
+                  plguins: ()=>[
+                    require('postcss-preset-env')({
+                      browsers: ['> 1%', 'last 5 versions', 'Firefox >= 20', 'iOS >= 7','safari >= 6']
+                    })
+                  ]
+                }
+              },
+              'sass-loader'
+            ]
+          },
+          {
+            test: /\.js$/,
+            exclude: /node_modules/,
+            loader: 'babel-loader',
             options: {
-              ident: 'postcss',
-              plguins: ()=>[
-                require('postcss-preset-env')({
-                  browsers: ['> 1%', 'last 5 versions', 'Firefox >= 20', 'iOS >= 7','safari >= 6']
-                })
+              babelrc: false,
+              cacheDirectory: true,
+              presets: [
+                [
+                  '@babel/preset-env',
+                  {
+                    useBuiltIns: 'usage',
+                    corejs: '3',
+                    targets: {
+                      ie: 9,
+                      chrome: 37,
+                      ios: 8,
+                      android: 6
+                    }
+                  }
+                ]
+              ],
+              plugins: [
+                '@babel/plugin-proposal-class-properties',
+                '@babel/plugin-proposal-nullish-coalescing-operator',
+                '@babel/plugin-proposal-optional-chaining',
               ]
             }
           },
-          'sass-loader'
-        ]
-      },
-      {
-				test: /\.js$/,
-				exclude: /node_modules/,
-				loader: 'babel-loader',
-				options: {
-					babelrc: false,
-					presets: [
-						[
-							'@babel/preset-env',
-							{
-								useBuiltIns: 'usage',
-								corejs: '3',
-								targets: {
-									ie: 9,
-									chrome: 37,
-									ios: 8,
-									android: 6
-								}
-							}
-						]
-					],
-					plugins: [
-						'@babel/plugin-proposal-class-properties',
-						'@babel/plugin-proposal-nullish-coalescing-operator',
-						'@babel/plugin-proposal-optional-chaining',
-					]
-				}
-      },
-      {
-        test: /\.(png|jpg|gif|svg)$/,
-        use: [{
-          loader: 'url-loader',
-          options: {
-            limit: 8192,
-            name: '[name].[ext]?[hash]'
+          {
+            test: /\.(png|jpg|gif|svg)$/,
+            use: [{
+              loader: 'url-loader',
+              options: {
+                limit: 8192,
+                name: '[name].[ext]?[hash]',
+                outputPath: 'image'
+              }
+            }]
+          },
+          {
+            test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+            loader: 'url-loader',
+            options: {
+              outputPath: 'font'
+            }
           }
-        }]
-      },
-      {
-        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-        loader: 'url-loader',
-        options: {
-          outputPath: 'font'
-        }
+        ]
       }
     ]
   },
   plugins: [
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin(['dist/']),
     new HtmlWebpackPlugin({
       template: resolve(__dirname, './src/index.html'),
       filename: 'index.html',
@@ -109,5 +116,41 @@ module.exports = {
       },
       canPrint: true  // 能够在console中打印信息
     })
-  ]
+  ],
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          name: 'name',
+          filename: 'vendor~[contenthash:8].js',
+          chunks: 'initial',
+          test: /[\\/]node_modules[\\/].+\.js$/,
+          reuseExistingChunk: true, // 复用模块
+          priority: -10
+        },
+        'vue': {
+          test: /vue/,
+          filename: 'vue~[contenthash:8].js',
+          chunks: 'initial',
+          reuseExistingChunk: true,
+          priority: 1
+        },
+        'element': {
+          test: /element\-ui/,
+          filename: 'element~[contenthash:8].js',
+          chunks: 'initial',
+          reuseExistingChunk: true,
+          priority: 2
+        }
+      }
+    },
+    minimizer: [
+      new TerserWebpackPlugin({
+        cache: true,
+        parallel: true,
+        extractComments: false,
+        sourceMap: true
+      })
+    ]
+  }
 }

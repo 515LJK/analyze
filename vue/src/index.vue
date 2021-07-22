@@ -11,7 +11,7 @@
 export default {
     computed: {
         money() {
-            return 12345
+            return 123455
         }
     }
 }
@@ -19,7 +19,7 @@ export default {
 
 <style lang="scss" scoped>
 @import url('~element-ui/lib/theme-chalk/index.css');
-// @import url('./style/font/iconfont');
+@import url('./style/font/iconfont.css');
 
 * {
     box-sizing: border-box;
