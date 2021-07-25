@@ -46,7 +46,7 @@
     "postcss-loader": "^3.0.0",
     "postcss-smart-import": "^0.6.10",
     "sass-loader": "^7.1.0",
-    "simple-progress-webpack-plugin": "^1.1.2",
+    "simple-progress-webpack-plugin": "^2.0.0",
     "style-loader": "^0.23.1",
     "terser-webpack-plugin": "2.3.5",
     "thread-loader": "^3.0.4",

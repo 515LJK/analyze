@@ -2,6 +2,7 @@ const { resolve } = require('path');
 const HtmlWebpackplugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+const ProgressPlugin = require('simple-progress-webpack-plugin');
 
 module.exports = {
 	mode: 'development',
@@ -74,7 +75,12 @@ module.exports = {
 			template: resolve(__dirname, './src/index.html')
 		}),
 		new CleanWebpackPlugin(),
-		new FriendlyErrorsWebpackPlugin()
+    new FriendlyErrorsWebpackPlugin(),
+    // 显示打包进度
+    new ProgressPlugin({
+      // format: isProduction ? 'compact' : 'minimal'
+      format: 'minimal'
+    }),
 	],
 	devServer: {
 		contentBase: resolve(__dirname, 'dist'),
@@ -90,5 +96,37 @@ module.exports = {
 		headers: {
       'Access-Control-Allow-Origin': '*'
     }
-	}
+  },
+  resolveLoader: {
+    modules: ['node_modules']
+  },
+  performance: {    // 性能
+    maxAssetSize: 409600  // 打包超出后警告
+  },
+  resolve: {    // 解析规则
+    extensions: ['js', 'vue', 'ts'],  // 引入文件时可以省略后缀
+    alias: {    // 别名
+      common: path.resolve(__dirname, 'src/common'),
+      'v-component': path.resolve(__dirname, 'src/components'),
+    },
+    modules: ['node_modules'],
+  },
+  externals: {  // 将下列资源通过index.html引入,降低webpack包资源体积
+    // 'vue': 'Vue',
+  },
+  stats: {    // webpack控制台输出 https://webpack.docschina.org/configuration/stats/
+    hash: false,  // 编译哈希值
+    version: true,  // webpack版本
+    timings: true,  // 时间
+    assets: false,    // 资源信息
+    chunks: true,   // chunk信息
+    modules: false, // 构建模块信息
+    reasons: false, // 模块被引用的原因信息
+    children: false,    // 子模块的信息
+    source: false,  // 模块的源码
+    errors: true,   // 展示错误
+    errorDetails: true, // 展示错误信息
+    warnings: true,   // 警告信息
+    publicPath: false // 展示publicPath
+  }
 }

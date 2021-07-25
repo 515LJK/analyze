@@ -11,6 +11,7 @@ module.exports = {
     },
     plugins: [
         new webpack.DllPlugin({
+            context: __dirname,
             name: '[name]_[hash]',
             path: resolve(__dirname, 'dll/mainfest.json')
         })

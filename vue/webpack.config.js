@@ -1,4 +1,5 @@
 const { resolve } = require('path');
+const webpack = require('webpack');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const MinCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
@@ -115,7 +116,11 @@ module.exports = {
         safe: true    // 避免 cssnano 重新计算 z-index
       },
       canPrint: true  // 能够在console中打印信息
-    })
+    }),
+    // new webpack.DllReferencePlugin({
+    //   context: __dirname,
+    //   manifest: resolve(__dirname, 'dll/mainfest.json')
+    // })
   ],
   optimization: {
     splitChunks: {
