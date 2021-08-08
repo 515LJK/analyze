@@ -1,5 +1,6 @@
 const path = require('path');
 const ClearWebpackPlugin = require('./plugins/clearWebpackPlugin')
+const CopyWebpackPlugin = require('./plugins/copyWebpackPlugin')
 module.exports = {
   mode: 'production',
   entry: './src/index.js',
@@ -16,7 +17,11 @@ module.exports = {
     ]
   },
   plugins: [
-    new ClearWebpackPlugin('dist')
+    new ClearWebpackPlugin(),
+    new CopyWebpackPlugin({
+      from: 'public',
+      to: 'css'
+    })
   ],
   resolveLoader: {
     modules: [
