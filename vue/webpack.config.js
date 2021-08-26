@@ -33,7 +33,7 @@ module.exports = {
                   ident: 'postcss',
                   plguins: ()=>[
                     require('postcss-preset-env')({
-                      browsers: ['> 1%', 'last 5 versions', 'Firefox >= 20', 'iOS >= 7','safari >= 6']
+                      stage: 3
                     })
                   ]
                 }
@@ -71,12 +71,12 @@ module.exports = {
             }
           },
           {
-            test: /\.(png|jpg|gif|svg)$/,
+            test: /\.(png|jpeg|jpg|gif|svg)$/,
             use: [{
               loader: 'url-loader',
               options: {
                 limit: 8192,
-                name: '[name].[ext]?[hash]',
+                name: '[name].[hash:8].[ext]',
                 outputPath: 'image'
               }
             }]
@@ -86,6 +86,14 @@ module.exports = {
             loader: 'url-loader',
             options: {
               outputPath: 'font'
+            }
+          },
+          {
+            exclude: [/\.(js|vue|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+            loader: 'file-loader',
+            options: {
+              name: '[name].[hash:8].[ext]',
+              outputPath: 'media'
             }
           }
         ]
@@ -157,5 +165,15 @@ module.exports = {
         sourceMap: true
       })
     ]
+  },
+  node: {
+    module: 'empty',
+    dgram: 'empty',
+    dns: 'mock',
+    fs: 'empty',
+    http2: 'empty',
+    net: 'empty',
+    tls: 'empty',
+    child_process: 'empty',
   }
 }
