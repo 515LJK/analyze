@@ -1,5 +1,6 @@
 const { resolve } = require('path');
 const webpack = require('webpack');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const MinCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
 const HtmlWebpackplugin = require('html-webpack-plugin');
@@ -10,12 +11,12 @@ const TerserWebpackPlugin = require('terser-webpack-plugin');
 
 const NODE_ENV = process.env.NODE_ENV;
 module.exports = function(env) {
-  const isEnvProduction = NODE_ENV === 'production';
-  const isEnvDevelopment = NODE_ENV === 'development';
+  const isEnvProduction = env === 'production';
+  const isEnvDevelopment = env === 'development';
   function getStyleLoaderOptions(cssOptions, preLoader) {
     const loaders = [
       isEnvDevelopment && 'style-loader',
-      isEnvProduction && MiniCssExtractPlugin.loader,
+      isEnvProduction && MinCssExtractPlugin.loader,
       {
         loader: 'css-loader',
         options: cssOptions,
@@ -25,14 +26,13 @@ module.exports = function(env) {
         options: {
           ident: 'postcss',
           plugins: () => [
-            require('postcss-flexbugs-fixes'),
             require('postcss-preset-env')({
               autoprefixer: {
                 flexbox: 'no-2009',
               },
               stage: 3,
             }),
-            postcssNormalize(),
+            // postcssNormalize(),
           ],
           sourceMap: isEnvProduction
         },
@@ -50,6 +50,65 @@ module.exports = function(env) {
       )
     }
     return loaders;
+  }
+
+  function getEnvConfig() {
+    const config = {};
+    if (isEnvProduction) {
+      config['optimization'] = {
+        splitChunks: {
+          cacheGroups: {
+            vendor: {
+              name: 'name',
+              filename: 'vendor~[contenthash:8].js',
+              chunks: 'initial',
+              test: /[\\/]node_modules[\\/].+\.js$/,
+              reuseExistingChunk: true, // 复用模块
+              priority: -10
+            },
+            'vue': {
+              test: /vue/,
+              filename: 'vue~[contenthash:8].js',
+              chunks: 'initial',
+              reuseExistingChunk: true,
+              priority: 1
+            },
+            'element': {
+              test: /element\-ui/,
+              filename: 'element~[contenthash:8].js',
+              chunks: 'initial',
+              reuseExistingChunk: true,
+              priority: 2
+            }
+          }
+        },
+        minimizer: [
+          new TerserWebpackPlugin({
+            cache: true,
+            parallel: true,
+            extractComments: false,
+            sourceMap: true
+          })
+        ]
+      }
+    }
+    if (isEnvDevelopment) {
+      config['devServer'] = {
+        contentBase: resolve(__dirname, 'dist'),
+        port: 8080,
+        hot: true,
+        quiet: true,
+        inline: true,    //和host配合使用先尝试热更新，失败则实时刷新
+        historyApiFallback: true,
+        overlay: {
+          errors: true
+        },
+        clientLogLevel: "none",
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      }
+    }
   }
 
   return {
@@ -74,19 +133,19 @@ module.exports = function(env) {
               test: /\.css$/,
               use: getStyleLoaderOptions({
                 importLoaders: 1,
-                sourceMap: isEnvProduction && shouldUseSourceMap
+                sourceMap: isEnvProduction
               })
             },
             {
               test: /\.scss$/,
               use: getStyleLoaderOptions({
                 importLoaders: 2,
-                sourceMap: isEnvProduction && shouldUseSourceMap
+                sourceMap: isEnvProduction
               }, 'sass-loader')
             },
             {
-              test: /\.js$/,
-              exclude: /node_modules/,
+              test: /\.(js|jsx)$/,
+              include: resolve(__dirname, 'src'),
               loader: 'babel-loader',
               options: {
                 babelrc: false,
@@ -96,20 +155,25 @@ module.exports = function(env) {
                     {
                       useBuiltIns: 'usage',
                       corejs: '3',
-                      targets: {
-                        ie: 9,
-                        chrome: 37,
-                        ios: 8,
-                        android: 6
-                      }
+                      exclude: ['transform-typeof-symbol']
                     }
+                  ],
+                  [
+                    '@babel/preset-react',
+                    {
+                      development: isEnvDevelopment,
+                      useBuiltIns: true,
+                    },
                   ]
                 ],
                 plugins: [
                   '@babel/plugin-proposal-class-properties',
                   '@babel/plugin-proposal-nullish-coalescing-operator',
                   '@babel/plugin-proposal-optional-chaining',
-                ]
+                ],
+                cacheDirectory: true,
+                cacheCompression: false,
+                compact: isEnvProduction,
               }
             },
             {
@@ -131,14 +195,24 @@ module.exports = function(env) {
       ]
     },
     plugins: [
-      new CleanWebpackPlugin(['dist/']),
-      new HtmlWebpackPlugin({
+      new CleanWebpackPlugin(),
+      new VueLoaderPlugin(),
+      new HtmlWebpackplugin({
         template: resolve(__dirname, './src/index.html'),
         filename: 'index.html',
         excludeChunks: /null/,  // 指定某个chunk文件不插入，chunks参数则指定要插入的chunk
         // chunksSortMode: 'dependency' 根据多个chunk的依赖关系排序插入顺序
-        minify: false   // 不压缩
+        minify: isEnvProduction   // 不压缩
       }),
+      // 显示打包进度
+      new ProgressPlugin({
+        format: isEnvProduction ? 'compact' : 'minimal'
+      }),
+      // new webpack.DllReferencePlugin({
+      //   context: __dirname,
+      //   manifest: resolve(__dirname, 'dll/mainfest.json')
+      // })
+    ].concat(isEnvProduction ? [
       new MinCssExtractPlugin({
         filename: '[name].[contenthash:10].css',
         chunkFilename: '[name].[chunkhash:10].css'
@@ -154,79 +228,15 @@ module.exports = function(env) {
         },
         canPrint: true  // 能够在console中打印信息
       }),
-      new FriendlyErrorsWebpackPlugin(),
-      // 显示打包进度
-      new ProgressPlugin({
-        // format: isProduction ? 'compact' : 'minimal'
-        format: 'minimal'
-      }),
-      // new webpack.DllReferencePlugin({
-      //   context: __dirname,
-      //   manifest: resolve(__dirname, 'dll/mainfest.json')
-      // })
-    ],
-    optimization: {
-      splitChunks: {
-        cacheGroups: {
-          vendor: {
-            name: 'name',
-            filename: 'vendor~[contenthash:8].js',
-            chunks: 'initial',
-            test: /[\\/]node_modules[\\/].+\.js$/,
-            reuseExistingChunk: true, // 复用模块
-            priority: -10
-          },
-          'vue': {
-            test: /vue/,
-            filename: 'vue~[contenthash:8].js',
-            chunks: 'initial',
-            reuseExistingChunk: true,
-            priority: 1
-          },
-          'element': {
-            test: /element\-ui/,
-            filename: 'element~[contenthash:8].js',
-            chunks: 'initial',
-            reuseExistingChunk: true,
-            priority: 2
-          }
-        }
-      },
-      minimizer: [
-        new TerserWebpackPlugin({
-          cache: true,
-          parallel: true,
-          extractComments: false,
-          sourceMap: true
-        })
-      ]
-    },
-    // devServer: {
-    //   contentBase: resolve(__dirname, 'dist'),
-    //   port: 8080,
-    //   hot: true,
-    //   quiet: true,
-    //   inline: true,    //和host配合使用先尝试热更新，失败则实时刷新
-    //   historyApiFallback: true,
-    //   overlay: {
-    //     errors: true
-    //   },
-    //   clientLogLevel: "none",
-    //   headers: {
-    //     'Access-Control-Allow-Origin': '*'
-    //   }
-    // },
+    ] : [new FriendlyErrorsWebpackPlugin()]),
     resolveLoader: {
       modules: ['node_modules']
     },
-    performance: {    // 性能
-      maxAssetSize: 409600  // 打包超出后警告
-    },
     resolve: {    // 解析规则
-      extensions: ['js', 'vue', 'ts'],  // 引入文件时可以省略后缀
+      extensions: ['.js', '.vue', '.ts', '.jsx'],  // 引入文件时可以省略后缀
       alias: {    // 别名
-        common: path.resolve(__dirname, 'src/common'),
-        'v-component': path.resolve(__dirname, 'src/components'),
+        common: resolve(__dirname, 'src/common'),
+        'v-component': resolve(__dirname, 'src/components'),
       },
       modules: ['node_modules'],
     },
@@ -247,6 +257,10 @@ module.exports = function(env) {
       errorDetails: true, // 展示错误信息
       warnings: true,   // 警告信息
       publicPath: false // 展示publicPath
-    }
+    },
+    performance: {    // 性能
+      maxAssetSize: 409600  // 打包超出后警告
+    },
+    ...getEnvConfig()
   }
 }(NODE_ENV)

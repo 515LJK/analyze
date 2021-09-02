@@ -1,4 +1,5 @@
 const { resolve } = require('path');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlWebpackplugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
@@ -10,7 +11,7 @@ module.exports = {
 	entry: './src/main.js',
 	output: {
 		path: resolve(__dirname, 'dist'),
-		filename: '[name].[contenthash].js'
+		// filename: '[name].[contenthash:10].js'
 	},
 	module: {
 		rules: [
@@ -75,6 +76,7 @@ module.exports = {
 			template: resolve(__dirname, './src/index.html')
 		}),
 		new CleanWebpackPlugin(),
+		new VueLoaderPlugin(),
     new FriendlyErrorsWebpackPlugin(),
     // 显示打包进度
     new ProgressPlugin({
@@ -104,10 +106,10 @@ module.exports = {
     maxAssetSize: 409600  // 打包超出后警告
   },
   resolve: {    // 解析规则
-    extensions: ['js', 'vue', 'ts'],  // 引入文件时可以省略后缀
+    extensions: ['.js', '.vue', '.ts'],  // 引入文件时可以省略后缀
     alias: {    // 别名
-      common: path.resolve(__dirname, 'src/common'),
-      'v-component': path.resolve(__dirname, 'src/components'),
+      common: resolve(__dirname, 'src/common'),
+      'v-component': resolve(__dirname, 'src/components'),
     },
     modules: ['node_modules'],
   },

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import index from './index.vue';
-import ElementUI from 'element-ui';
+// import ElementUI from 'element-ui';
 // import DynamicScroller from 'vue-virtual-scroller/src/components/DynamicScroller.vue'
 // import loading from 'v-component/loading/directive';
 // import image from 'v-component/image/image';
