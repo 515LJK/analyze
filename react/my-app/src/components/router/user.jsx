@@ -1,5 +1,4 @@
 import React from 'react';
-import {NavLink} from 'react-router-dom';
 import qs from 'querystring'
 
 const details = ['你好，我是小李', '你好，我是小强', '你好，我是小张']
