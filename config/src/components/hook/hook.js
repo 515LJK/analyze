@@ -1,14 +1,18 @@
 import React, {useState, useEffect} from 'react';
 
 function Hook() {
-  const [count] = useState(0);
+  const [count, setCount] = useState(0);
 
   useEffect(()=>{
     console.log(count)
-  });
+  }, [count]);
+
+  function add() {
+    setCount(count=>count+1)
+  }
 
   return (
-    <div className="hook">
+    <div className="hook" onClick={add}>
       {count}
     </div>
   )

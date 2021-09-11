@@ -1,29 +1,29 @@
-import {SET_USER_ID, SET_USER_NAME, SET_USER_LIKE} from '../constant';
+import {SET_USER_ID, SET_USER_NAME, SET_USER_LIKE} from '../constant'
 const user = {
     name: '',
     id: '',
     like: ''
 }
-export default function userReducer(preState = user, action) {
+
+export default function reducer(state = user, action) {
     const {type, data} = action;
-    switch (type) {
+    switch(type) {
         case SET_USER_ID:
             return {
-                ...preState,
+                ...state,
                 id: data
-            }
+            };
         case SET_USER_NAME:
             return {
-                ...preState,
+                ...state,
                 name: data
-            }
+            };
         case SET_USER_LIKE:
             return {
-                ...preState,
+                ...state,
                 like: data
-            }
-            break;
-        default:
-            return preState
+            };
+        default: 
+            return state
     }
 }

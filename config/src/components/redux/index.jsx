@@ -1,8 +1,9 @@
 import React from 'react';
-import User from './user';
-import {Provider} from 'react-redux';
-import store from '../../redux/store';
-class Index extends React.Component {
+import {Provider} from 'react-redux'
+import store from '../../redux/store'
+import User from './user'
+
+export default class Id extends React.Component {
     render() {
         return (
             <Provider store={store}>
@@ -11,5 +12,3 @@ class Index extends React.Component {
         )
     }
 }
-
-export default Index;

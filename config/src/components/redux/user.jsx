@@ -37,4 +37,4 @@ class User extends React.Component {
     }
 }
 
-export default connect(()=>({}), {setUserName, setUserId, setUserLike})(User);
+export default connect(()=>({}), {setUserName, setUserId, setUserLike})(User)
