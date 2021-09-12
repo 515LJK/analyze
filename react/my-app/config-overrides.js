@@ -13,7 +13,8 @@ module.exports = function(config, env) {
         resolve: {
             alias: {    // 别名
                 common: resolve(__dirname, 'src/common'),
-                '@': resolve(__dirname),
+                '@': resolve(__dirname, 'src'),
+                'public': resolve(__dirname, 'public'),
                 'r-components': resolve(__dirname, 'src/components'),
                 'r-page': resolve(__dirname, 'src/page'),
                 'r-redux': resolve(__dirname, 'src/redux')

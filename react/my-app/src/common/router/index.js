@@ -1,6 +1,6 @@
 import React from 'react';
 import {HashRouter, Route, Switch} from 'react-router-dom';
-import App from 'r-page/app';
+import App from '@/app.jsx';
 
 const router = ()=> (
     <HashRouter>
